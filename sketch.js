@@ -13,14 +13,13 @@ var gameChar_x;
 var gameChar_y;
 var floorPos_y;
 
-// var canyon;
 var canyons;
 var trees_x;
 var treePos_y;
 var mountains_x;
-// var mountain;
-// var collectable;
 var collectables;
+
+var platforms;
 
 var isLeft;
 var isRight;
@@ -116,9 +115,7 @@ function gameOver()
 	text("A game by Crater Games", width / 2, height / 1.5);
 
 }
-
 // Start Screen Logic End
-
 function gameScreen()
 {
 	background(239, 239, 239);
@@ -134,20 +131,19 @@ function gameScreen()
 	translate(-cameraPosX, 0);
 
 	drawSun();
-
 	drawMountains();
-
 	drawTrees();
-
 	updateCanyon();
-
 	updateClouds();
 	drawClouds();
-
 	updateCollectables();
 
-	drawLives();
+	for(var i = 0; i < platforms.length; i++)
+	{
+		platforms[i].draw();
+	}
 
+	drawLives();
 	push();
 	fill(255);
 	noStroke();
@@ -403,6 +399,9 @@ function startGame()
 		{ x_pos: 1675, width: 100, isPlummeting: false }
 	];
 
+	platforms = [];
+	platforms.push(createPlatforms(50, floorPos_y - 100, 50));
+
 	gameScore = 0;
 	flagpole = {isReached: false, x_pos: 1350};
 }
@@ -418,11 +417,24 @@ function playerMovement()
 	{
 		gameChar_x += 5;
 	}
+
 	if(gameChar_y < floorPos_y)
 	{
-		isFalling = true;
-		gameChar_y += jumpVelocity;
-		jumpVelocity += 0.2;
+		var isContact = false;
+		for(var i = 0; i < platforms.length; i++)
+		{
+			if(platforms[i].checkContact(gameChar_x, gameChar_y) == true)
+			{
+				isContact = true;
+				break;
+			}
+		}
+		if(isContact == false)
+		{
+			isFalling = true;
+			gameChar_y += jumpVelocity;
+			jumpVelocity += 0.2;
+		}
 	}
 	else if(!isPlummeting)
 	{
@@ -482,7 +494,6 @@ function keyPressed()
 		return;
 	}
 	
-
 	if(lives < 1 || flagpole.isReached)
 	{
 		return;
@@ -524,7 +535,6 @@ function keyReleased()
 }
 // Player key functions Stop
 // Game Graphics below //
-
 function drawClouds()
 {
 	for (var i = 0; i < clouds_x.length; i++)
@@ -651,7 +661,6 @@ function checkCollectable(t_collectable)
 	{
 		t_collectable.isFound = true;
 		gameScore ++;
-		console.log("Collected:", t_collectable);
 	}
 }
 
@@ -693,6 +702,34 @@ function checkFlagpole()
 	{
 		flagpole.isReached = true;
 	}
+}
+
+function createPlatforms(x, y, length)
+{
+	var p = 
+	{
+		x: x,
+		y: y,
+		length: length,
+		draw: function()
+		{
+			fill(139, 69, 19);
+			rect(this.x, this.y, this.length, 20);
+		},
+		checkContact: function(gc_x, gc_y)
+		{
+			if(gc_x > this.x && gc_x < this.x + this.length)
+			{
+				var d = this.y - gc_y;
+				if(d >= 0 && d < 5)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+	return p;
 }
 
 
