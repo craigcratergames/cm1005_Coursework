@@ -2,6 +2,9 @@
 var state = "start";
 
 var menuSong;
+var gameSong;
+var jumpSound;
+var walkSound;
 
 var customFont;
 
@@ -31,6 +34,7 @@ var cameraPosX = 0;
 var gameScore;
 // Global Variables End
 
+// Game Setup logic and draw states start
 function setup()
 {
 	createCanvas(1024, 576);
@@ -54,6 +58,7 @@ function draw()
 		gameOver();
 	}
 }
+// Game Setup logic and draw states stop
 
 // Start Screen Logic Start
 function preload()
@@ -63,9 +68,11 @@ function preload()
 	soundFormats('wav','mp3');
 	menuSong = loadSound('assets/mixkit-game-level-music-689.wav');
 	menuSong.setVolume(0.2);
-
 	gameSong = loadSound('assets/battleThemeA.mp3');
 	gameSong.setVolume(0.1);
+	jumpSound = loadSound('assets/JumpSound.wav');
+	jumpSound.setVolume(0.9);
+
 }
 
 function startScreen() 
@@ -90,6 +97,24 @@ function startScreen()
 		{
 			state = "game";
 		}
+}
+
+function gameOver() 
+{
+	background(200);
+	textAlign(CENTER, CENTER);
+	textFont(customFont);
+
+	fill(0);
+	textSize(32);
+	text("GAME OVER", width / 2, height / 6);
+	textSize(32);
+	text("Thanks for playing", width / 2, height / 4);
+	textSize(24);
+	text("Press CTR + R to return to Main Menu", width / 2, height / 2);
+	textSize(16);
+	text("A game by Crater Games", width / 2, height / 1.5);
+
 }
 
 // Start Screen Logic End
@@ -319,28 +344,9 @@ function gameScreen()
 	// Character Sprite Logic End
 
 	drawFlagpole();
-	
-	if(isLeft)
-	{
-		gameChar_x -= 5;
-	}
-	if(isRight)
-	{
-		gameChar_x += 5;
-	}
-	if(gameChar_y < floorPos_y)
-	{
-		isFalling = true;
-		gameChar_y += jumpVelocity;
-		jumpVelocity += 0.5;
-	}
-	else if(!isPlummeting)
-	{
-		isFalling = false;
-		gameChar_y = floorPos_y;
-		jumpVelocity = 0;
-	}
 
+	playerMovement();
+	
 	if (flagpole.isReached == false)
 	{
 		checkFlagpole();
@@ -350,20 +356,16 @@ function gameScreen()
 
 	if (lives < 1) 
 		{
-			fill(255, 0, 0);
-			textSize(50);
-			textAlign(CENTER);
-			text("Game Over", width / 2, height / 2);
-			return;
+			state = "gameover"
 		}
-	if (flagpole.isReached) 
-		{
-			fill(0, 255, 0);
-			textSize(50);
-			textAlign(CENTER);
-			text("Level Complete", width / 2, height / 2);
-			return;
-		}
+	// if (flagpole.isReached) 
+	// 	{
+	// 		fill(0, 255, 0);
+	// 		textSize(50);
+	// 		textAlign(CENTER);
+	// 		text("Level Complete", width / 2, height / 2);
+	// 		return;
+	// 	}
 }
 
 function startGame()
@@ -404,8 +406,33 @@ function startGame()
 	gameScore = 0;
 	flagpole = {isReached: false, x_pos: 1350};
 }
+// Player Input, Health & UI Start
 
-function checkPlayerDie() {
+function playerMovement()
+{
+	if(isLeft)
+	{
+		gameChar_x -= 5;
+	}
+	if(isRight)
+	{
+		gameChar_x += 5;
+	}
+	if(gameChar_y < floorPos_y)
+	{
+		isFalling = true;
+		gameChar_y += jumpVelocity;
+		jumpVelocity += 0.2;
+	}
+	else if(!isPlummeting)
+	{
+		isFalling = false;
+		gameChar_y = floorPos_y;
+		jumpVelocity = 0;
+	}
+}
+function checkPlayerDie() 
+{
   if (gameChar_y > height + 100) 
 	{
     	lives -= 1;
@@ -438,7 +465,8 @@ function drawLives()
 		drawHeart(cameraPosX + 20 + i * 30, 50, 10);
   	}
 }
-
+// Player Health & UI Stop
+// Player key function Start
 function keyPressed()
 {
 	if(state === "start" && key === 'f')
@@ -463,16 +491,17 @@ function keyPressed()
 	{
 		return;
 	}
-	if(keyCode == 37)
+	if(keyCode == 37 || key == 'a' || key =='A')
 	{
 		isLeft = true;
 	}
-	else if(keyCode == 39)
+	else if(keyCode == 39 || key == 'd' || key == 'D') 
 	{
 		isRight = true;
 	}
-	else if(keyCode == 38 && gameChar_y == floorPos_y)
+	else if(keyCode == 38 && gameChar_y == floorPos_y || key == ' ')
 	{
+		jumpSound.play();
 		gameChar_y -= 100;
 		isFalling = true;
 	}
@@ -484,15 +513,17 @@ function keyReleased()
 	{
 		return;
 	}
-	if(keyCode == 37)
+	if(keyCode == 37 || key == 'a' || key =='A')
 		{
 			isLeft = false;
 		}
-		else if(keyCode == 39)
+		else if(keyCode == 39 || key == 'd' || key == 'D')
 		{
 			isRight = false;
 		}
 }
+// Player key functions Stop
+// Game Graphics below //
 
 function drawClouds()
 {
@@ -521,7 +552,7 @@ function updateClouds() {
 function drawSun()
 {
 	fill(255, 255, 204);
-	ellipse(100, 100, 80, 80);
+	ellipse(cameraPosX + 100, 100, 80, 80);
 }
 
 function drawMountains()
