@@ -1,35 +1,27 @@
 // Global Variables Start
 var state = "start";
-
 var menuSong;
 var gameSong;
 var jumpSound;
 var walkSound;
-
 var customFont;
-
 var lives;
 var gameChar_x;
 var gameChar_y;
 var floorPos_y;
-
 var canyons;
 var trees_x;
 var treePos_y;
 var mountains_x;
 var collectables;
-
 var platforms;
-
 var isLeft;
 var isRight;
 var isPlummeting;
 var isFalling;
-
+var isJumping;
 var jumpVelocity = 0;
-
 var cameraPosX = 0;
-
 var gameScore;
 // Global Variables End
 
@@ -121,15 +113,15 @@ function gameScreen()
 	background(239, 239, 239);
 
 	cameraPosX = gameChar_x - width / 2;
-
+	// Ground Start
 	noStroke();
 	fill(117,70,17);
 	rect(0, floorPos_y, width, height - floorPos_y);
 	fill(111,212,44);
 	rect(0, floorPos_y, width, 35);
-
+	// Ground Stop
 	translate(-cameraPosX, 0);
-
+	// Draw Objects Start
 	drawSun();
 	drawMountains();
 	drawTrees();
@@ -137,21 +129,21 @@ function gameScreen()
 	updateClouds();
 	drawClouds();
 	updateCollectables();
-
+	// Draw Objects End
 	for(var i = 0; i < platforms.length; i++)
 	{
 		platforms[i].draw();
 	}
-
+	//Player Lives Start
 	drawLives();
 	push();
-	fill(255);
+	fill(0, 0, 0);
 	noStroke();
 	textSize(20);
 	textAlign(LEFT, TOP);
 	text("Score: " + gameScore + " out of 5", cameraPosX + 10, 10);
 	pop();
-
+	// Player Lives Stop
 	//Character Sprite Logic Start
 	if(isLeft && isFalling)
 	{
@@ -374,39 +366,113 @@ function startGame()
 	isPlummeting = false;
 	isFalling = false;
 
-	trees_x = [125, 375, 620, 950, 1125, 1285];
+	trees_x = [125];
 	treePos_y = height/2;
 
 	clouds_x = [100, 300, 500, 700, 900, 1100, 1300];
-	clouds_y = [100, 150, 75, 125, 95, 135, 85];
+	clouds_y = [50, 150, 75, 125, 95, 135, 85];
 
 	mountains_x = [-480, -20, 455, 800];
 
 	collectables = 
 	[
-		{ x_pos: 100, y_pos: floorPos_y, size: 50, isFound: false },
-		{ x_pos: 400, y_pos: floorPos_y, size: 50, isFound: false },
-		{ x_pos: 800, y_pos: floorPos_y, size: 50, isFound: false },
-		{ x_pos: 1200, y_pos: floorPos_y, size: 50, isFound: false },
-		{ x_pos: 1600, y_pos: floorPos_y, size: 50, isFound: false }
+		{ x_pos: 470, y_pos: floorPos_y - 150, size: 50, isFound: false },	
 	];
 
 	canyons = 
 	[
-		{ x_pos: 150, width: 100, isPlummeting: false },
-		{ x_pos: 625, width: 100, isPlummeting: false },
-		{ x_pos: 1135, width: 100, isPlummeting: false },
-		{ x_pos: 1675, width: 100, isPlummeting: false }
+		{ x_pos: 600, width: 100, isPlummeting: false },
+		{ x_pos: 900, width: 100, isPlummeting: false },
+		{ x_pos: 1500, width: 200, isPlummeting: false },
+		{ x_pos: 2250, width: 100, isPlummeting: false },
+		{ x_pos: 3000, width: 100, isPlummeting: false },
 	];
 
 	platforms = [];
-	platforms.push(createPlatforms(50, floorPos_y - 100, 50));
+	platforms.push(createPlatforms(250, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(400, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(425, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(450, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(475, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(500, floorPos_y - 95, 25));
+
+	// Large Canyon Jump Section
+	platforms.push(createPlatforms(1325, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(1350, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(1375, floorPos_y - 95, 25));
+
+	platforms.push(createPlatforms(1400, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1425, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1450, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1475, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1500, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1525, floorPos_y - 180, 25));
+
+	platforms.push(createPlatforms(1625, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1650, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1675, floorPos_y - 180, 25));
+	platforms.push(createPlatforms(1700, floorPos_y - 180, 25));
+
+	platforms.push(createPlatforms(1700, floorPos_y - 95, 25));
+
+	platforms.push(createPlatforms(1900, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(1925, floorPos_y - 95, 25));
+
+	platforms.push(createPlatforms(2050, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(2150, floorPos_y - 95, 25));
+	platforms.push(createPlatforms(2250, floorPos_y - 95, 25));
+
+	// Mario style end game wall. 
+	platforms.push(createPlatforms(2830, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2850, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2850, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2870, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2870, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2870, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2890, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2890, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2890, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2890, floorPos_y - 80, 25));
+	platforms.push(createPlatforms(2910, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2910, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2910, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2910, floorPos_y - 80, 25));
+	platforms.push(createPlatforms(2910, floorPos_y - 100, 25));
+	platforms.push(createPlatforms(2930, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2930, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2930, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2930, floorPos_y - 80, 25));
+	platforms.push(createPlatforms(2930, floorPos_y - 100, 25));
+	platforms.push(createPlatforms(2930, floorPos_y - 120, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 80, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 100, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 120, 25));
+	platforms.push(createPlatforms(2950, floorPos_y - 140, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 80, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 100, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 120, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 140, 25));
+	platforms.push(createPlatforms(2970, floorPos_y - 160, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 20, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 40, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 60, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 80, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 100, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 120, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 140, 25));
+	platforms.push(createPlatforms(2990, floorPos_y - 160, 25));
+	
 
 	gameScore = 0;
-	flagpole = {isReached: false, x_pos: 1350};
+	flagpole = {isReached: false, x_pos: 3300};
 }
 // Player Input, Health & UI Start
-
 function playerMovement()
 {
 	if(isLeft)
@@ -417,6 +483,8 @@ function playerMovement()
 	{
 		gameChar_x += 5;
 	}
+
+	gameChar_x = Math.max(0, gameChar_x);
 
 	if(gameChar_y < floorPos_y)
 	{
@@ -435,6 +503,11 @@ function playerMovement()
 			gameChar_y += jumpVelocity;
 			jumpVelocity += 0.2;
 		}
+		else
+			{
+				isFalling = false;
+				jumpVelocity = 0;
+			}
 	}
 	else if(!isPlummeting)
 	{
@@ -510,12 +583,24 @@ function keyPressed()
 	{
 		isRight = true;
 	}
-	else if(keyCode == 38 && gameChar_y == floorPos_y || key == ' ')
+	else if((keyCode == 38 || key == ' ') && (gameChar_y == floorPos_y || isOnPlatform()))
 	{
 		jumpSound.play();
 		gameChar_y -= 100;
 		isFalling = true;
 	}
+}
+
+function isOnPlatform()
+{
+	for (var i = 0; i < platforms.length; i++)
+	{
+		if (platforms[i].checkContact(gameChar_x, gameChar_y))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 function keyReleased()
@@ -713,6 +798,7 @@ function createPlatforms(x, y, length)
 		length: length,
 		draw: function()
 		{
+			stroke('black');
 			fill(139, 69, 19);
 			rect(this.x, this.y, this.length, 20);
 		},
@@ -721,7 +807,7 @@ function createPlatforms(x, y, length)
 			if(gc_x > this.x && gc_x < this.x + this.length)
 			{
 				var d = this.y - gc_y;
-				if(d >= 0 && d < 5)
+				if(d >= 0 && d < 10)
 				{
 					return true;
 				}
@@ -731,5 +817,3 @@ function createPlatforms(x, y, length)
 	}
 	return p;
 }
-
-
