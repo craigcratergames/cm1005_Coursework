@@ -51,7 +51,7 @@ function draw()
 }
 // Game setup logic and draw states stop
 
-// Start screen & game over Logic Start
+// Start screen & game over logic start
 function preload()
 {
 	customFont = loadFont('assets/PlayfulTime-BLBB8.ttf');
@@ -104,10 +104,9 @@ function gameOver()
 	textSize(32);
 	text("Thanks for playing", width / 2, height / 4);
 	textSize(24);
-	text("Press CTR + R to return to Main Menu", width / 2, height / 2);
+	text("Press CTRL + R to return to Main Menu", width / 2, height / 2);
 	textSize(16);
 	text("A game by Crater Games", width / 2, height / 1.5);
-
 }
 // Start screen logic end
 // Gamescreen start
@@ -132,11 +131,8 @@ function gameScreen()
 	updateClouds();
 	drawClouds();
 	updateCollectables();
+	drawPlatforms();
 	// Draw objects end
-	for(var i = 0; i < platforms.length; i++)
-	{
-		platforms[i].draw();
-	}
 	//Player lives start
 	drawLives();
 	push();
@@ -369,17 +365,21 @@ function startGame()
 	isPlummeting = false;
 	isFalling = false;
 
-	trees_x = [125];
+	trees_x = [125, 325, 580, 730, 875, 1450, 1750, 2200, 2400];
 	treePos_y = height/2;
 
-	clouds_x = [100, 300, 500, 700, 900, 1100, 1300];
-	clouds_y = [50, 150, 75, 125, 95, 135, 85];
+	clouds_x = [100, 175, 275, 350, 475, 565];
+	clouds_y = [50, 100, 50, 150, 50, 100];
 
-	mountains_x = [-480, -20, 455, 800];
+	mountains_x = [-480, -20, 455, 875, 1450, 1615, 2250, 3250];
 
 	collectables = 
 	[
-		{ x_pos: 470, y_pos: floorPos_y - 150, size: 50, isFound: false },	
+		{ x_pos: 450, y_pos: floorPos_y - 100, size: 50, isFound: false },	
+		{ x_pos: 1475, y_pos: floorPos_y - 185, size: 50, isFound: false },	
+		{ x_pos: 2060, y_pos: floorPos_y - 100, size: 50, isFound: false },	
+		{ x_pos: 2160, y_pos: floorPos_y - 100, size: 50, isFound: false },	
+		{ x_pos: 2260, y_pos: floorPos_y - 100, size: 50, isFound: false },	
 	];
 
 	canyons = 
@@ -642,10 +642,10 @@ function drawClouds()
 
 function updateClouds() {
 	for (let i = 0; i < clouds_x.length; i++) {
-		clouds_x[i] += 0.5;
-		if (clouds_x[i] > cameraPosX + width + 100) 
+		clouds_x[i] += 1;
+		if (clouds_x[i] > cameraPosX + width + 10) 
 		{
-			clouds_x[i] = cameraPosX - 100;
+			clouds_x[i] = cameraPosX - 10;
 		}
 	}
 }
@@ -734,7 +734,7 @@ function drawCanyon(t_canyon)
 	let w = t_canyon.width;
 
 	push();
-	fill(239, 239, 239);
+	fill(102, 178, 255);
 	stroke('black');
 	strokeWeight(2);
 	triangle(x1 + 20, floorPos_y - 1, x1 + w - 20, floorPos_y - 1, x1 + w / 2, 800);
@@ -793,6 +793,14 @@ function checkFlagpole()
 	{
 		flagpole.isReached = true;
 		gameChar_x = flagpole;
+	}
+}
+
+function drawPlatforms()
+{
+	for(var i = 0; i < platforms.length; i++)
+	{
+		platforms[i].draw();
 	}
 }
 
