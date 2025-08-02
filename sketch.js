@@ -1,4 +1,4 @@
-// Global Variables Start
+// Global variables start
 var state = "start";
 var menuSong;
 var gameSong;
@@ -23,9 +23,9 @@ var isJumping;
 var jumpVelocity = 0;
 var cameraPosX = 0;
 var gameScore;
-// Global Variables End
+// Global variables end
 
-// Game Setup logic and draw states start
+// Game setup logic and draw states start
 function setup()
 {
 	createCanvas(1024, 576);
@@ -49,20 +49,22 @@ function draw()
 		gameOver();
 	}
 }
-// Game Setup logic and draw states stop
+// Game setup logic and draw states stop
 
-// Start Screen Logic Start
+// Start screen & game over Logic Start
 function preload()
 {
 	customFont = loadFont('assets/PlayfulTime-BLBB8.ttf');
 
 	soundFormats('wav','mp3');
 	menuSong = loadSound('assets/mixkit-game-level-music-689.wav');
-	menuSong.setVolume(0.2);
+	menuSong.setVolume(0.1);
 	gameSong = loadSound('assets/battleThemeA.mp3');
 	gameSong.setVolume(0.1);
 	jumpSound = loadSound('assets/JumpSound.wav');
 	jumpSound.setVolume(0.9);
+	walkSound = loadSound('assets/step_cloth4.wav');
+	walkSound.setVolume(1);
 
 }
 
@@ -107,21 +109,22 @@ function gameOver()
 	text("A game by Crater Games", width / 2, height / 1.5);
 
 }
-// Start Screen Logic End
+// Start screen logic end
+// Gamescreen start
 function gameScreen()
 {
 	background(239, 239, 239);
 
 	cameraPosX = gameChar_x - width / 2;
-	// Ground Start
+	// Ground start
 	noStroke();
 	fill(117,70,17);
 	rect(0, floorPos_y, width, height - floorPos_y);
 	fill(111,212,44);
 	rect(0, floorPos_y, width, 35);
-	// Ground Stop
 	translate(-cameraPosX, 0);
-	// Draw Objects Start
+	// Ground stop
+	// Draw objects start
 	drawSun();
 	drawMountains();
 	drawTrees();
@@ -129,12 +132,12 @@ function gameScreen()
 	updateClouds();
 	drawClouds();
 	updateCollectables();
-	// Draw Objects End
+	// Draw objects end
 	for(var i = 0; i < platforms.length; i++)
 	{
 		platforms[i].draw();
 	}
-	//Player Lives Start
+	//Player lives start
 	drawLives();
 	push();
 	fill(0, 0, 0);
@@ -143,7 +146,7 @@ function gameScreen()
 	textAlign(LEFT, TOP);
 	text("Score: " + gameScore + " out of 5", cameraPosX + 10, 10);
 	pop();
-	// Player Lives Stop
+	// Player lives stop
 	//Character Sprite Logic Start
 	if(isLeft && isFalling)
 	{
@@ -346,14 +349,14 @@ function gameScreen()
 		{
 			state = "gameover"
 		}
-	// if (flagpole.isReached) 
-	// 	{
-	// 		fill(0, 255, 0);
-	// 		textSize(50);
-	// 		textAlign(CENTER);
-	// 		text("Level Complete", width / 2, height / 2);
-	// 		return;
-	// 	}
+	if (flagpole.isReached) 
+		{
+			fill(0, 255, 0);
+			textSize(50);
+			textAlign(CENTER);
+			text("Level Complete", width / 2, height / 2);
+			return;
+		}
 }
 
 function startGame()
@@ -468,7 +471,6 @@ function startGame()
 	platforms.push(createPlatforms(2990, floorPos_y - 140, 25));
 	platforms.push(createPlatforms(2990, floorPos_y - 160, 25));
 	
-
 	gameScore = 0;
 	flagpole = {isReached: false, x_pos: 3300};
 }
@@ -577,10 +579,12 @@ function keyPressed()
 	}
 	if(keyCode == 37 || key == 'a' || key =='A')
 	{
+		walkSound.loop();
 		isLeft = true;
 	}
 	else if(keyCode == 39 || key == 'd' || key == 'D') 
-	{
+	{	
+		walkSound.loop();
 		isRight = true;
 	}
 	else if((keyCode == 38 || key == ' ') && (gameChar_y == floorPos_y || isOnPlatform()))
@@ -589,6 +593,24 @@ function keyPressed()
 		gameChar_y -= 100;
 		isFalling = true;
 	}
+}
+
+function keyReleased()
+{
+	if(lives < 1 || flagpole.isReached)
+	{
+		return;
+	}
+	if(keyCode == 37 || key == 'a' || key =='A')
+		{
+			walkSound.stop()
+			isLeft = false;
+		}
+		else if(keyCode == 39 || key == 'd' || key == 'D')
+		{
+			walkSound.stop()
+			isRight = false;
+		}
 }
 
 function isOnPlatform()
@@ -601,22 +623,6 @@ function isOnPlatform()
 		}
 	}
 	return false;
-}
-
-function keyReleased()
-{
-	if(lives < 1 || flagpole.isReached)
-	{
-		return;
-	}
-	if(keyCode == 37 || key == 'a' || key =='A')
-		{
-			isLeft = false;
-		}
-		else if(keyCode == 39 || key == 'd' || key == 'D')
-		{
-			isRight = false;
-		}
 }
 // Player key functions Stop
 // Game Graphics below //
@@ -636,7 +642,7 @@ function drawClouds()
 
 function updateClouds() {
 	for (let i = 0; i < clouds_x.length; i++) {
-		clouds_x[i] += 0.1;
+		clouds_x[i] += 0.5;
 		if (clouds_x[i] > cameraPosX + width + 100) 
 		{
 			clouds_x[i] = cameraPosX - 100;
@@ -671,27 +677,6 @@ function drawMountains()
 	}
 }
 
-function updateCanyon()
-{
-	for (let i = 0; i < canyons.length; i++)
-	{
-		drawCanyon(canyons[i]);
-		checkCanyon(canyons[i]);
-	}
-}
-
-function updateCollectables()
-{
-	for (var i = 0; i < collectables.length; i++)
-	{
-		if (!collectables[i].isFound)
-		{
-			drawCollectable(collectables[i]);
-			checkCollectable(collectables[i]);
-		}
-	}
-}
-
 function drawTrees()
 {
 	for (var i = 0; i < trees_x.length; i++)
@@ -722,6 +707,27 @@ function drawCollectable(t_collectable)
 	}
 }
 
+function updateCollectables()
+{
+	for (var i = 0; i < collectables.length; i++)
+	{
+		if (!collectables[i].isFound)
+		{
+			drawCollectable(collectables[i]);
+			checkCollectable(collectables[i]);
+		}
+	}
+}
+
+function checkCollectable(t_collectable)
+{
+	if(dist(gameChar_x, gameChar_y, t_collectable.x_pos, t_collectable.y_pos) < 20)
+	{
+		t_collectable.isFound = true;
+		gameScore ++;
+	}
+}
+
 function drawCanyon(t_canyon)
 {
 	let x1 = t_canyon.x_pos;
@@ -740,12 +746,12 @@ function drawCanyon(t_canyon)
 	triangle(x1 + w - 40, 475, x1 + w, 475, x1 + w / 2 + 15, 800);
 }
 
-function checkCollectable(t_collectable)
+function updateCanyon()
 {
-	if(dist(gameChar_x, gameChar_y, t_collectable.x_pos, t_collectable.y_pos) < 20)
+	for (let i = 0; i < canyons.length; i++)
 	{
-		t_collectable.isFound = true;
-		gameScore ++;
+		drawCanyon(canyons[i]);
+		checkCanyon(canyons[i]);
 	}
 }
 
@@ -786,6 +792,7 @@ function checkFlagpole()
 	if (d < 10)
 	{
 		flagpole.isReached = true;
+		gameChar_x = flagpole;
 	}
 }
 
