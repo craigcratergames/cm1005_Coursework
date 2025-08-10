@@ -121,10 +121,10 @@ function gameScreen()
 	rect(0, floorPos_y, width, height - floorPos_y);
 	fill(111,212,44);
 	rect(0, floorPos_y, width, 35);
+	drawSun();
 	translate(-cameraPosX, 0);
 	// Ground stop
 	// Draw objects start
-	drawSun();
 	drawMountains();
 	drawTrees();
 	updateCanyon();
@@ -350,7 +350,7 @@ function gameScreen()
 			fill(0, 255, 0);
 			textSize(50);
 			textAlign(CENTER);
-			text("Level Complete", width / 2, height / 2);
+			text("Level Complete", cameraPosX + width / 2, height / 2);
 			return;
 		}
 }
@@ -640,12 +640,17 @@ function drawClouds()
 	}
 }
 
+let lastDebugCameraPosX = null;
+
 function updateClouds() {
 	for (let i = 0; i < clouds_x.length; i++) {
 		clouds_x[i] += 1;
-		if (clouds_x[i] > cameraPosX + width + 10) 
+		if (clouds_x[i] > cameraPosX + width + 40) 
 		{
-			clouds_x[i] = cameraPosX - 10;
+			clouds_x[i] = cameraPosX - 35;
+		} else if (clouds_x[i] < cameraPosX - 40) 
+		{
+			clouds_x[i] = cameraPosX + width + 35;
 		}
 	}
 }
@@ -653,7 +658,7 @@ function updateClouds() {
 function drawSun()
 {
 	fill(255, 255, 204);
-	ellipse(cameraPosX + 100, 100, 80, 80);
+	ellipse(100, 100, 80, 80);
 }
 
 function drawMountains()
@@ -789,10 +794,23 @@ function drawFlagpole()
 function checkFlagpole()
 {
 	var d = abs(gameChar_x - flagpole.x_pos);
+
 	if (d < 10)
 	{
-		flagpole.isReached = true;
-		gameChar_x = flagpole;
+		if (gameScore != 5) 
+		{
+			isRight = false;
+		} 
+		else 
+		{
+			// Stop the player from moving.
+			flagpole.isReached = true;
+			isLeft = false;
+			isRight = false;
+			gameSong.stop();
+			walkSound.stop();
+
+		}
 	}
 }
 
@@ -822,7 +840,7 @@ function createPlatforms(x, y, length)
 			if(gc_x > this.x && gc_x < this.x + this.length)
 			{
 				var d = this.y - gc_y;
-				if(d >= 0 && d < 10)
+				if(d >= 0 && d < 6)
 				{
 					return true;
 				}

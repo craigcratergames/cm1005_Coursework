@@ -1,59 +1,11 @@
-### The Game Project 6 Adding game mechanics
+Platformer Game Project – First Term Submission
 
-This week's project builds upon the sketch from last week. Before starting this project make sure you have completed all steps from last week and tested your game thoroughly.
+This project is a side-scrolling platformer game created in p5.js for my first-year programming course. The aim of the game is for the player to control a small character through a level, avoiding hazards, collecting items, and reaching the flagpole to complete the stage. The game features a start screen, the main game, and a game-over screen, allowing for a complete loop from beginning to end.
 
-Create a copy of your sketch directory from last week and rename it to something like `game-project-6`. Keep your completed project from last week safe as a reference, and make the following changes to the code
-in your new game directory.
+The game world contains several interactive elements. Platforms are placed at different heights for the player to jump on, and there are collectable items scattered around the level. These items contribute to the player’s score. Canyons act as hazards – if the player falls into one, they lose a life and are reset to a starting position. A scrolling background with clouds, mountains, and trees gives the impression of a larger, continuous world. The camera follows the player’s movement, keeping the action centred on screen.
 
+Player movement includes walking left and right, jumping, and falling. Gravity pulls the character down, and collision detection ensures the player stands on platforms instead of falling through them. Sound effects have been added to enhance the experience, with background music playing during gameplay and specific sounds for actions like collecting items or losing a life.
 
-1. Add a score counter [1 marks]
-	- create a global variable called `gameScore`
-	- increment `gameScore` by one each time the character collects an item.
-	- HINT: you may need an extra conditional to prevent the score being added multiple times
-	- use the text function to draw the score on the screen.
+The level ends when the player reaches the flagpole, but this is only possible once all five collectable items have been gathered. This adds a challenge by requiring exploration before completion. Lives and score are displayed throughout, so the player always knows their progress.
 
-2. Add a flagpole [1 marks]
-	- We need to add an end to your level. I have chosen a flagpole but you can chose according to the theme of your game.
-	- Initialise an object called `flagpole`, it should at least have the properties `x_pos` and `isReached`.
-	- set `isReached` to `false` and `x_pos` to a world position at the very end of your level.
-	- create a function called `drawFlagpole` and call this from the draw function
-	- complete the function to draw your flagpole in two states. One for when `isReached` is false,
-	and one for when it is `true`
-
-3. Flagpole checking function [1 marks]
-	- create a function called `checkFlagpole`
-	- call the function from `draw`, but write a conditional so that `checkFlagpole` is only called when `flagpole.isReached` is `false`
-	- in `checkFlagpole` write a conditional such that when the gameChar is in range of the flagpole
-	its `isReached` property is set to `true`
-
-4. Add lives [2 marks]
-	- Your character should begin with three lives, and each time they fall down a canyon the game
-	 should reset and their remaining lives decrement by one.
-	- Create a global variable `lives`, and initialise it to `3` within `setup`.
-	- Create a function called `checkPlayerDie`. Call this within draw.
-	- In this function define a conditional statement that tests if your character has fallen below
-	the bottom of the canvas. When this is `true`, decrement the `lives` counter by one
-	- Create a new function called `startGame()`.
-	- Move everything from `setup` except `createCanvas` and the initialisation of `floorPos_y` and
-	`lives` into this new function.
-	- At the end of your now very short `setup` function call `startGame()`.
-	- In `checkPlayerDie` create a conditional statement to test if the player has
-	used all of their lives. If there are lives remaining call `startGame`.
-	- Write some code using a `for` loop to draw life tokens onto the screen so that you
-	can keep track of how many lives you have remaining.
-
-5. "Game over" and "Level complete" text [2 marks]
-	- In the draw loop, after your drawing code and before your game logic code, write two conditional statements
-	- The first displays "Game over" when `lives` is less than 1.
-	- The other displays "Level complete" when`flagpole.isReached` is true
-	- Write further conditionals in the draw and keyPressed functions to ensure that no further interaction is possible once these end of game states have been reached. 
-
-
-6. Tidy your code [3 marks]
-	- make sure your code is elegant
-	- remove all commented blocks of code
-	- check all indentations
-	- make your variable names are consistent
-	- remove any redundant code
-	- refactor unwieldy drawing code
-	- break up long commands onto multiple lines
+Overall, this project demonstrates the core concepts of interactive programming: variables, conditionals, loops, functions, and basic game logic. While it is a simple game, it has all the features needed to create a fun and complete experience, and it lays the foundation for more complex games in the future.
